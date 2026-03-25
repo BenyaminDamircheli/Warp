@@ -3,6 +3,38 @@ import Darwin
 import Inject
 import SwiftUI
 
+/// Clickable info control that presents streaming-model copy in a material popover (system tooltip-style chrome).
+private struct StreamingModelInfoControl: View {
+	let helpText: String
+	@State private var isPresented = false
+
+	var body: some View {
+		Button {
+			isPresented.toggle()
+		} label: {
+			Image(systemName: "info.circle")
+				.font(.body)
+				.imageScale(.small)
+				.foregroundStyle(.secondary)
+				.contentShape(.rect)
+				.padding(2)
+		}
+		.buttonStyle(.plain)
+		.accessibilityLabel("About streaming transcription")
+		.help("Click for details about this streaming model")
+		.popover(isPresented: $isPresented, arrowEdge: .top) {
+			Text(helpText)
+				.font(.callout)
+				.foregroundStyle(.primary)
+				.multilineTextAlignment(.leading)
+				.fixedSize(horizontal: false, vertical: true)
+				.frame(minWidth: 240, maxWidth: 300)
+				.padding(12)
+				.presentationBackground(.regularMaterial)
+		}
+	}
+}
+
 struct CuratedRow: View {
 	@ObserveInjection var inject
 	@Bindable var store: StoreOf<ModelDownloadFeature>
@@ -29,9 +61,12 @@ struct CuratedRow: View {
 
 				// Title and ratings
 				VStack(alignment: .leading, spacing: 6) {
-					HStack(spacing: 6) {
+					HStack(alignment: .firstTextBaseline, spacing: 6) {
 						Text(model.displayName)
 							.font(.headline)
+							.lineLimit(1)
+							.truncationMode(.tail)
+							.layoutPriority(-1)
 						if let badge = model.badge {
 							Text(badge)
 								.font(.caption2)
@@ -41,6 +76,11 @@ struct CuratedRow: View {
 								.padding(.vertical, 2)
 								.background(Color.accentColor)
 								.clipShape(RoundedRectangle(cornerRadius: 4))
+								.fixedSize(horizontal: true, vertical: false)
+						}
+						if let streamingHelp = model.streamingModelHelpText {
+							StreamingModelInfoControl(helpText: streamingHelp)
+								.fixedSize()
 						}
 					}
 					HStack(spacing: 16) {
@@ -54,6 +94,7 @@ struct CuratedRow: View {
 						}
 					}
 				}
+				.frame(maxWidth: .infinity, alignment: .leading)
 
 				Spacer(minLength: 12)
 

@@ -43,7 +43,7 @@ public struct CuratedModelInfo: Equatable, Identifiable, Codable {
 		case .multilingualV3:
 			return "BEST FOR MULTILINGUAL"
 		case .eouStreaming160:
-			return "STREAMING · ENGLISH"
+			return "Streaming"
 		case nil:
 			return nil
 		}
@@ -55,6 +55,12 @@ public struct CuratedModelInfo: Equatable, Identifiable, Codable {
 
 	var isParakeet: Bool {
 		parakeetModel != nil
+	}
+
+	/// Tooltip for the streaming EOU model (shown on the info control in settings).
+	public var streamingModelHelpText: String? {
+		guard parakeetModel == .eouStreaming160 else { return nil }
+		return "Streams partial text for lower latency. The speed benefit shows up mainly when you have Mercury-2 post-processing enabled. Parakeet TDT v3 is usually more accurate, however, so treat this as a speed vs. accuracy primarily when post-processing is on."
 	}
 
 	public init(
