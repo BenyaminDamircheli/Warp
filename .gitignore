@@ -3,17 +3,10 @@ updates/
 .vscode
 .DS_Store
 
-# Xcode
-*.xcodeproj/xcuserdata/
-*.xcworkspace/xcuserdata/
-*.xcuserstate
-buildServer.json
 bin
 scripts
 tools
 ExportOptions.plist
-HexCore/.build
-HexCore/.swiftpm/xcode/xcuserdata/kit.xcuserdatad/xcschemes
 FluidAudio/
 node_modules/
 .npm-cache/
@@ -21,3 +14,22 @@ node_modules/
 
 # Claude
 .claude/
+
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcuserstate
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.xcarchive
+*.ipa
+*.dSYM.zip
+buildServer.json
+
+# Swift Package Manager — build products, checkouts, and intermediates (never commit)
+**/.build/
+
+# SwiftPM Xcode integration (per-machine scheme data)
+**/.swiftpm/xcode/xcuserdata/
