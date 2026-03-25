@@ -43,7 +43,7 @@ public struct CuratedModelInfo: Equatable, Identifiable, Codable {
 		case .multilingualV3:
 			return "BEST FOR MULTILINGUAL"
 		case .eouStreaming160:
-			return "Streaming"
+			return "STREAMING"
 		case nil:
 			return nil
 		}

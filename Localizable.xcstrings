@@ -385,16 +385,6 @@
     "Maximum History Entries" : {
 
     },
-    "mercury.apiKey.clear" : {
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Remove API key"
-          }
-        }
-      }
-    },
     "mercury.apiKey.label" : {
       "localizations" : {
         "en" : {
@@ -420,7 +410,17 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Paste new key to save or replace"
+            "value" : "Paste your key from inceptionlabs.ai"
+          }
+        }
+      }
+    },
+    "mercury.apiKey.removeFromMac" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove key from this Mac"
           }
         }
       }
@@ -430,17 +430,27 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Save API key"
+            "value" : "Save to Keychain"
           }
         }
       }
     },
-    "mercury.apiKey.saved" : {
+    "mercury.apiKey.status.detail" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API key saved in Keychain"
+            "value" : "Post-processing uses this key. It never leaves your Mac except when sending requests to Inception."
+          }
+        }
+      }
+    },
+    "mercury.apiKey.status.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Key saved"
           }
         }
       }
@@ -480,7 +490,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add an Inception API key in Settings, or disable Mercury post-processing."
+            "value" : "Add an Inception API key under Transforms → Post-processing, or turn post-processing off."
           }
         }
       }
@@ -495,12 +505,22 @@
         }
       }
     },
+    "mercury.section.subtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Runs after word removals and remappings. It takes the raw transcript and cleans it up—fewer typos and misfires, tighter wording, and phrasing that matches what you meant to say—then pastes that version."
+          }
+        }
+      }
+    },
     "mercury.section.title" : {
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mercury 2"
+            "value" : "Post-processing"
           }
         }
       }
@@ -510,7 +530,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Post-process with Mercury 2"
+            "value" : "Use cloud post-processing"
           }
         }
       }
@@ -520,7 +540,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Optionally rewrite transcribed text using Inception's Mercury 2 model. Requires an API key from inceptionlabs.ai."
+            "value" : "Sends the transcript to Inception's Mercury model for that cleanup pass. Requires an API key from inceptionlabs.ai (below)."
           }
         }
       }
@@ -530,7 +550,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Mercury post-processing failed; pasted the original text instead."
+            "value" : "Post-processing failed; pasted the unprocessed transcript instead."
           }
         }
       }

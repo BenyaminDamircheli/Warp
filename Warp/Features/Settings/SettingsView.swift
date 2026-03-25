@@ -38,7 +38,6 @@ struct SettingsView: View {
 			SoundSectionView(store: store)
 			GeneralSectionView(store: store)
 			HistorySectionView(store: store)
-			MercuryTransformSectionView(store: store)
 		}
 		.formStyle(.grouped)
 		.task {

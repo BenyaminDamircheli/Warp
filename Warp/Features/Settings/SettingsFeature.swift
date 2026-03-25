@@ -100,8 +100,10 @@ struct SettingsFeature {
     // Word remappings
     case addWordRemoval
     case removeWordRemoval(UUID)
+    case updateWordRemoval(UUID, WordRemoval)
     case addWordRemapping
     case removeWordRemapping(UUID)
+    case updateWordRemapping(UUID, WordRemapping)
     case setRemappingScratchpadFocused(Bool)
 
     // Mercury 2 (Inception API)
@@ -381,6 +383,13 @@ struct SettingsFeature {
         }
         return .none
 
+      case let .updateWordRemoval(id, removal):
+        state.$warpSettings.withLock {
+          guard let idx = $0.wordRemovals.firstIndex(where: { $0.id == id }) else { return }
+          $0.wordRemovals[idx] = removal
+        }
+        return .none
+
       case .addWordRemapping:
         state.$warpSettings.withLock {
           $0.wordRemappings.append(.init(match: "", replacement: ""))
@@ -390,6 +399,13 @@ struct SettingsFeature {
       case let .removeWordRemapping(id):
         state.$warpSettings.withLock {
           $0.wordRemappings.removeAll { $0.id == id }
+        }
+        return .none
+
+      case let .updateWordRemapping(id, remapping):
+        state.$warpSettings.withLock {
+          guard let idx = $0.wordRemappings.firstIndex(where: { $0.id == id }) else { return }
+          $0.wordRemappings[idx] = remapping
         }
         return .none
 

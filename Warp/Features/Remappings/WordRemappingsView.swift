@@ -68,6 +68,8 @@ struct WordRemappingsView: View {
 				case .remappings:
 					remappingsSection
 				}
+
+				MercuryTransformSectionView(store: store)
 			}
 			.frame(maxWidth: .infinity, alignment: .leading)
 			.padding()
@@ -88,10 +90,8 @@ struct WordRemappingsView: View {
 
 				LazyVStack(alignment: .leading, spacing: 6) {
 					ForEach(store.warpSettings.wordRemovals) { removal in
-						if let removalBinding = removalBinding(for: removal.id) {
-							RemovalRow(removal: removalBinding) {
-								store.send(.removeWordRemoval(removal.id))
-							}
+						RemovalRow(removal: removalBinding(for: removal.id)) {
+							store.send(.removeWordRemoval(removal.id))
 						}
 					}
 				}
@@ -123,10 +123,8 @@ struct WordRemappingsView: View {
 
 				LazyVStack(alignment: .leading, spacing: 6) {
 					ForEach(store.warpSettings.wordRemappings) { remapping in
-						if let remappingBinding = remappingBinding(for: remapping.id) {
-							RemappingRow(remapping: remappingBinding) {
-								store.send(.removeWordRemapping(remapping.id))
-							}
+						RemappingRow(remapping: remappingBinding(for: remapping.id)) {
+							store.send(.removeWordRemapping(remapping.id))
 						}
 					}
 				}
@@ -183,18 +181,24 @@ struct WordRemappingsView: View {
 		.padding(.horizontal, Layout.rowHorizontalPadding)
 	}
 
-	private func removalBinding(for id: UUID) -> Binding<WordRemoval>? {
-		guard let index = store.warpSettings.wordRemovals.firstIndex(where: { $0.id == id }) else {
-			return nil
-		}
-		return $store.warpSettings.wordRemovals[index]
+	private func removalBinding(for id: UUID) -> Binding<WordRemoval> {
+		Binding(
+			get: {
+				store.warpSettings.wordRemovals.first(where: { $0.id == id })
+					?? WordRemoval(id: id, pattern: "")
+			},
+			set: { store.send(.updateWordRemoval(id, $0)) }
+		)
 	}
 
-	private func remappingBinding(for id: UUID) -> Binding<WordRemapping>? {
-		guard let index = store.warpSettings.wordRemappings.firstIndex(where: { $0.id == id }) else {
-			return nil
-		}
-		return $store.warpSettings.wordRemappings[index]
+	private func remappingBinding(for id: UUID) -> Binding<WordRemapping> {
+		Binding(
+			get: {
+				store.warpSettings.wordRemappings.first(where: { $0.id == id })
+					?? WordRemapping(id: id, match: "", replacement: "")
+			},
+			set: { store.send(.updateWordRemapping(id, $0)) }
+		)
 	}
 
 	private var previewText: String {
