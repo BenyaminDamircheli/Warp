@@ -1,0 +1,19 @@
+{
+  "": {
+    "swift-dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/master.swiftdeps"
+  },
+  "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/checkouts/swift-dependencies/Sources/DependenciesMacros/Internal/Exports.swift": {
+    "dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Exports.d",
+    "object": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Exports.swift.o",
+    "swiftmodule": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Exports~partial.swiftmodule",
+    "swift-dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Exports.swiftdeps",
+    "diagnostics": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Exports.dia"
+  },
+  "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/checkouts/swift-dependencies/Sources/DependenciesMacros/Macros.swift": {
+    "dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Macros.d",
+    "object": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Macros.swift.o",
+    "swiftmodule": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Macros~partial.swiftmodule",
+    "swift-dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Macros.swiftdeps",
+    "diagnostics": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesMacros.build/Macros.dia"
+  }
+}

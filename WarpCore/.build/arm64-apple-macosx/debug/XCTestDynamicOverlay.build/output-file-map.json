@@ -1,0 +1,19 @@
+{
+  "": {
+    "swift-dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/master.swiftdeps"
+  },
+  "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/checkouts/xctest-dynamic-overlay/Sources/XCTestDynamicOverlay/Internal/Deprecations.swift": {
+    "dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Deprecations.d",
+    "object": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Deprecations.swift.o",
+    "swiftmodule": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Deprecations~partial.swiftmodule",
+    "swift-dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Deprecations.swiftdeps",
+    "diagnostics": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Deprecations.dia"
+  },
+  "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/checkouts/xctest-dynamic-overlay/Sources/XCTestDynamicOverlay/Internal/Exports.swift": {
+    "dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Exports.d",
+    "object": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Exports.swift.o",
+    "swiftmodule": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Exports~partial.swiftmodule",
+    "swift-dependencies": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Exports.swiftdeps",
+    "diagnostics": "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/XCTestDynamicOverlay.build/Exports.dia"
+  }
+}

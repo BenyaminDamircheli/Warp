@@ -1,0 +1,3 @@
+module SwiftSyntaxBuilder {
+    header "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/SwiftSyntaxBuilder.build/include/SwiftSyntaxBuilder-Swift.h"
+}

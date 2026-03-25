@@ -1,0 +1,3 @@
+module DependenciesTestSupport {
+    header "/Users/benyamindamircheli/Project/Hex/WarpCore/.build/arm64-apple-macosx/debug/DependenciesTestSupport.build/include/DependenciesTestSupport-Swift.h"
+}
