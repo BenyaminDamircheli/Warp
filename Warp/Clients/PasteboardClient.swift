@@ -1,10 +1,3 @@
-//
-//  PasteboardClient.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/24/25.
-//
-
 import ComposableArchitecture
 import Dependencies
 import DependenciesMacros

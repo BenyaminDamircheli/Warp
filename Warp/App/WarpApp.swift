@@ -1,6 +1,5 @@
 import ComposableArchitecture
 import Inject
-import Sparkle
 import AppKit
 import SwiftUI
 
@@ -11,20 +10,18 @@ struct WarpApp: App {
 	}
 
 	@NSApplicationDelegateAdaptor(WarpAppDelegate.self) var appDelegate
-  
+
     var body: some Scene {
         MenuBarExtra {
-            CheckForUpdatesView()
-
             // Copy last transcript to clipboard
             MenuBarCopyLastTranscriptButton()
 
             Button("Settings...") {
                 appDelegate.presentSettingsView()
             }.keyboardShortcut(",")
-			
+
 			Divider()
-			
+
 			Button("Quit") {
 				NSApplication.shared.terminate(nil)
 			}.keyboardShortcut("q")
@@ -42,8 +39,6 @@ struct WarpApp: App {
 		WindowGroup {}.defaultLaunchBehavior(.suppressed)
 			.commands {
 				CommandGroup(after: .appInfo) {
-					CheckForUpdatesView()
-
 					Button("Settings...") {
 						appDelegate.presentSettingsView()
 					}.keyboardShortcut(",")

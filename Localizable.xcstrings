@@ -35,17 +35,6 @@
     "1000" : {
 
     },
-    "About" : {
-      "comment" : "Settings -> About Section headline",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Über"
-          }
-        }
-      }
-    },
     "Accessibility" : {
       "comment" : "Settings -> Accessibility Section headline",
       "extractionState" : "stale",
@@ -97,48 +86,6 @@
     },
     "Cancel Download" : {
 
-    },
-    "Changelog" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Änderungen"
-          }
-        }
-      }
-    },
-    "Changelog could not be loaded." : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Änderungen konnten nicht geladen werden."
-          }
-        }
-      }
-    },
-    "Check for Updates" : {
-      "comment" : "Check for updates button in About section of Settings",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nach Updates suchen"
-          }
-        }
-      }
-    },
-    "Check for Updates…" : {
-      "comment" : "Check for updates button in top menu",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Suche nach Updates…"
-          }
-        }
-      }
     },
     "Clear shortcut" : {
 
@@ -490,7 +437,7 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Add an Inception API key under Transforms → Post-processing, or turn post-processing off."
+            "value" : "Add an Inception API key under Style → Post-processing, or turn post-processing off."
           }
         }
       }
@@ -510,7 +457,377 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Runs after word removals and remappings. It takes the raw transcript and cleans it up—fewer typos and misfires, tighter wording, and phrasing that matches what you meant to say—then pastes that version."
+            "value" : "Runs after local Transforms (word rules) and applies your Style preset plus any optional supplement below."
+          }
+        }
+      }
+    },
+    "style.addApp.button" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add app"
+          }
+        }
+      }
+    },
+    "style.addApp.help" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add apps. Click an icon to remove."
+          }
+        }
+      }
+    },
+    "style.email.toLine" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "To: Alex Doe"
+          }
+        }
+      }
+    },
+    "style.formatting.sectionSubtitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose a preset for each category. Linked apps use the preset from that category. Style formatting is English-only for now; more languages are planned."
+          }
+        }
+      }
+    },
+    "style.formatting.sectionTitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formatting"
+          }
+        }
+      }
+    },
+    "style.linkedApps.caption" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Transcripts in these apps use the preset you select below. Click an app to remove it."
+          }
+        }
+      }
+    },
+    "style.linkedApps.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Linked apps"
+          }
+        }
+      }
+    },
+    "style.openPanel.message" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Choose one or more apps to link to this style."
+          }
+        }
+      }
+    },
+    "style.preset.casual.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Casual"
+          }
+        }
+      }
+    },
+    "style.preset.diff.casual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Same general tone as Formal, but drops optional commas and often the last period."
+          }
+        }
+      }
+    },
+    "style.preset.diff.expressive.personal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Texting-style: mostly lowercase, question marks OK, almost no trailing periods."
+          }
+        }
+      }
+    },
+    "style.preset.diff.expressive.standard" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Same capitalization as Formal; adds friendly extra emphasis (often an exclamation) at the end."
+          }
+        }
+      }
+    },
+    "style.preset.diff.formal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Baseline polish: normal sentence case, commas where you’d expect, and clear ending punctuation."
+          }
+        }
+      }
+    },
+    "style.preset.expressive.default.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Excited!"
+          }
+        }
+      }
+    },
+    "style.preset.expressive.personal.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "very casual"
+          }
+        }
+      }
+    },
+    "style.preset.formal.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Formal"
+          }
+        }
+      }
+    },
+    "style.preset.subtitle.casual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lighter punctuation, same capitalization"
+          }
+        }
+      }
+    },
+    "style.preset.subtitle.expressive.default" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Same caps; more enthusiasm"
+          }
+        }
+      }
+    },
+    "style.preset.subtitle.expressive.personal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mostly lowercase; very light punctuation"
+          }
+        }
+      }
+    },
+    "style.preset.subtitle.formal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Full punctuation and sentence case"
+          }
+        }
+      }
+    },
+    "style.preview.email.casual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi Alex,\n\nIt was great talking with you today. Looking forward to our next chat.\n\nBest,\nMary"
+          }
+        }
+      }
+    },
+    "style.preview.email.expressive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi Alex,\n\nIt was great talking with you today. Looking forward to our next chat!\n\nBest,\nMary"
+          }
+        }
+      }
+    },
+    "style.preview.email.formal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hi Alex,\n\nIt was great talking with you today. Looking forward to our next chat.\n\nBest,\nMary"
+          }
+        }
+      }
+    },
+    "style.preview.other.casual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So far I am enjoying the new workout routine. I am excited for tomorrow's workout especially after a full night of rest."
+          }
+        }
+      }
+    },
+    "style.preview.other.expressive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So far, I am enjoying the new workout routine. I am excited for tomorrow's workout, especially after a full night of rest!"
+          }
+        }
+      }
+    },
+    "style.preview.other.formal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "So far, I am enjoying the new workout routine. I am excited for tomorrow's workout, especially after a full night of rest."
+          }
+        }
+      }
+    },
+    "style.preview.personal.casual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey are you free for lunch tomorrow? Let's do 12 if that works for you"
+          }
+        }
+      }
+    },
+    "style.preview.personal.expressive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "hey are you free for lunch tomorrow? let's do 12 if that works for you"
+          }
+        }
+      }
+    },
+    "style.preview.personal.formal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey, are you free for lunch tomorrow? Let's do 12 if that works for you."
+          }
+        }
+      }
+    },
+    "style.preview.work.casual" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey, if you're free let's chat about the great results"
+          }
+        }
+      }
+    },
+    "style.preview.work.expressive" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey, if you're free, let's chat about the great results!"
+          }
+        }
+      }
+    },
+    "style.preview.work.formal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hey, if you're free, let's chat about the great results."
+          }
+        }
+      }
+    },
+    "style.tab.email" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Email"
+          }
+        }
+      }
+    },
+    "style.tab.other" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Other"
+          }
+        }
+      }
+    },
+    "style.pageTitle" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Style"
+          }
+        }
+      }
+    },
+    "style.tab.personal" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Personal"
+          }
+        }
+      }
+    },
+    "style.tab.work" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Work"
           }
         }
       }
@@ -781,16 +1098,6 @@
         }
       }
     },
-    "Show Changelog" : {
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Änderungen anzeigen"
-          }
-        }
-      }
-    },
     "Show Dock Icon" : {
       "comment" : "label for general setting whether to show the dock icon or not.",
       "localizations" : {
@@ -911,29 +1218,6 @@
     },
     "Use double-tap only" : {
 
-    },
-    "Version" : {
-      "comment" : "Label for version in About section.",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Version"
-          }
-        }
-      }
-    },
-    "Visit our GitHub" : {
-      "comment" : "button text to link to github",
-      "extractionState" : "stale",
-      "localizations" : {
-        "de" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Besuche unser GitHub"
-          }
-        }
-      }
     },
     "Volume" : {
 

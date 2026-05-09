@@ -1,10 +1,3 @@
-//
-//  TranscriptionFeature.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/24/25.
-//
-
 import ComposableArchitecture
 import CoreGraphics
 import Foundation
@@ -15,6 +8,21 @@ import WhisperKit
 
 private let transcriptionFeatureLogger = WarpLog.transcription
 private let mercuryTransformLogger = WarpLog.mercuryTransform
+
+/// When `true`, the CGEvent tap discards the event so it never reaches macOS (or other apps).
+fileprivate func shouldConsumeKeyboardEventForHotkey(
+  hotkey: HotKey,
+  useDoubleTapOnly: Bool,
+  keyEvent: KeyEvent
+) -> Bool {
+  if useDoubleTapOnly { return true }
+  if keyEvent.key != nil { return true }
+  // Modifier-only fn: leaving events enabled makes macOS show the emoji & symbols picker on repeat taps.
+  if hotkey.key == nil, hotkey.modifiers.contains(kind: .fn) {
+    return true
+  }
+  return false
+}
 
 @Reducer
 struct TranscriptionFeature {
@@ -30,6 +38,8 @@ struct TranscriptionFeature {
     var meter: Meter = .init(averagePower: 0, peakPower: 0)
     var sourceAppBundleID: String?
     var sourceAppName: String?
+    /// Focused window title when frontmost app is a browser (web-mail routing). Not persisted.
+    var sourceBrowserWindowTitle: String?
     @Shared(.warpSettings) var warpSettings: WarpSettings
     @Shared(.isRemappingScratchpadFocused) var isRemappingScratchpadFocused: Bool = false
     @Shared(.modelBootstrapState) var modelBootstrapState: ModelBootstrapState
@@ -79,6 +89,7 @@ struct TranscriptionFeature {
   @Dependency(\.transcriptPersistence) var transcriptPersistence
   @Dependency(\.inceptionAPIKey) var inceptionAPIKey
   @Dependency(\.mercuryTransform) var mercuryTransform
+  @Dependency(\.hostContext) var hostContext
 
   var body: some ReducerOf<Self> {
     Reduce { state, action in
@@ -183,6 +194,15 @@ private extension TranscriptionFeature {
       @Shared(.isSettingHotKey) var isSettingHotKey: Bool
       @Shared(.warpSettings) var warpSettings: WarpSettings
 
+      // Serialize hotkey-driven actions. Unstructured `Task { await send }` per event allowed
+      // `hotKeyReleased` / `hotKeyPressed` to reorder on fast double-taps (e.g. fn double-tap lock).
+      let (actionStream, actionContinuation) = AsyncStream<Action>.makeStream()
+      let consumer = Task.detached(priority: .userInitiated) {
+        for await action in actionStream {
+          await send(action)
+        }
+      }
+
       // Handle incoming input events (keyboard and mouse)
       let token = keyEventMonitor.handleInputEvent { inputEvent in
         // Skip if the user is currently setting a hotkey
@@ -203,7 +223,7 @@ private extension TranscriptionFeature {
           if keyEvent.key == .escape, keyEvent.modifiers.isEmpty,
              hotKeyProcessor.state == .idle
           {
-            Task { await send(.cancel) }
+            actionContinuation.yield(.cancel)
             return false
           }
 
@@ -212,25 +232,35 @@ private extension TranscriptionFeature {
           case .startRecording:
             // If double-tap lock is triggered, we start recording immediately
             if hotKeyProcessor.state == .doubleTapLock {
-              Task { await send(.startRecording) }
+              actionContinuation.yield(.startRecording)
             } else {
-              Task { await send(.hotKeyPressed) }
+              actionContinuation.yield(.hotKeyPressed)
             }
-            // If the hotkey is purely modifiers, return false to keep it from interfering with normal usage
-            // But if useDoubleTapOnly is true, always intercept the key
-            return useDoubleTapOnly || keyEvent.key != nil
+            return shouldConsumeKeyboardEventForHotkey(
+              hotkey: hotKeyProcessor.hotkey,
+              useDoubleTapOnly: useDoubleTapOnly,
+              keyEvent: keyEvent
+            )
 
           case .stopRecording:
-            Task { await send(.hotKeyReleased) }
-            return false // or `true` if you want to intercept
+            actionContinuation.yield(.hotKeyReleased)
+            return shouldConsumeKeyboardEventForHotkey(
+              hotkey: hotKeyProcessor.hotkey,
+              useDoubleTapOnly: useDoubleTapOnly,
+              keyEvent: keyEvent
+            )
 
           case .cancel:
-            Task { await send(.cancel) }
+            actionContinuation.yield(.cancel)
             return true
 
           case .discard:
-            Task { await send(.discard) }
-            return false // Don't intercept - let the key chord reach other apps
+            actionContinuation.yield(.discard)
+            return shouldConsumeKeyboardEventForHotkey(
+              hotkey: hotKeyProcessor.hotkey,
+              useDoubleTapOnly: useDoubleTapOnly,
+              keyEvent: keyEvent
+            )
 
           case .none:
             // If we detect repeated same chord, maybe intercept.
@@ -247,10 +277,10 @@ private extension TranscriptionFeature {
           // Process mouse click - for modifier-only hotkeys, this may cancel/discard
           switch hotKeyProcessor.processMouseClick() {
           case .cancel:
-            Task { await send(.cancel) }
+            actionContinuation.yield(.cancel)
             return false // Don't intercept the click itself
           case .discard:
-            Task { await send(.discard) }
+            actionContinuation.yield(.discard)
             return false // Don't intercept the click itself
           case .startRecording, .stopRecording, .none:
             return false
@@ -258,15 +288,18 @@ private extension TranscriptionFeature {
         }
       }
 
-      defer { token.cancel() }
+      defer {
+        actionContinuation.finish()
+        token.cancel()
+      }
 
       await withTaskCancellationHandler {
         while !Task.isCancelled {
           try? await Task.sleep(for: .seconds(60))
         }
-      } onCancel: {
-        token.cancel()
-      }
+      } onCancel: {}
+
+      await consumer.value
     }
   }
 
@@ -307,12 +340,20 @@ private extension TranscriptionFeature {
     let startTime = Date()
     state.recordingStartTime = startTime
     
-    // Capture the active application
+    // Capture the active application (and browser window title for web-mail style routing)
     if let activeApp = NSWorkspace.shared.frontmostApplication {
       state.sourceAppBundleID = activeApp.bundleIdentifier
       state.sourceAppName = activeApp.localizedName
     }
+    let browserTitle = hostContext.focusedBrowserWindowTitle()
+    state.sourceBrowserWindowTitle = browserTitle.isEmpty ? nil : browserTitle
+    let bundleForLog = state.sourceAppBundleID ?? "nil"
+    let isBrowser = StyleBrowserBundle.isBrowser(bundleID: bundleForLog)
+    let webmailMatched = StyleWebMailHeuristics.looksLikeWebMailWindow(title: browserTitle)
     transcriptionFeatureLogger.notice("Recording started at \(startTime.ISO8601Format())")
+    transcriptionFeatureLogger.notice(
+      "Host context bundle=\(bundleForLog, privacy: .public) isBrowser=\(isBrowser, privacy: .public) titleLen=\(browserTitle.count, privacy: .public) webmail=\(webmailMatched, privacy: .public) title=\(browserTitle, privacy: .private)"
+    )
 
     let selectedModel = state.warpSettings.selectedModel
     let isParakeetEOU = ParakeetModel(rawValue: selectedModel)?.isStreamingEOU == true
@@ -489,29 +530,9 @@ private extension TranscriptionFeature {
     let remappings = state.warpSettings.wordRemappings
     let removalsEnabled = state.warpSettings.wordRemovalsEnabled
     let removals = state.warpSettings.wordRemovals
-    let modifiedResult: String
-    if state.isRemappingScratchpadFocused {
-      modifiedResult = result
+    let applyUserModifications = !state.isRemappingScratchpadFocused
+    if !applyUserModifications {
       transcriptionFeatureLogger.info("Scratchpad focused; skipping word modifications")
-    } else {
-      var output = result
-      if removalsEnabled {
-        let removedResult = WordRemovalApplier.apply(output, removals: removals)
-        if removedResult != output {
-          let enabledRemovalCount = removals.filter(\.isEnabled).count
-          transcriptionFeatureLogger.info("Applied \(enabledRemovalCount) word removal(s)")
-        }
-        output = removedResult
-      }
-      let remappedResult = WordRemappingApplier.apply(output, remappings: remappings)
-      if remappedResult != output {
-        transcriptionFeatureLogger.info("Applied \(remappings.count) word remapping(s)")
-      }
-      modifiedResult = remappedResult
-    }
-
-    guard !modifiedResult.isEmpty else {
-      return .none
     }
 
     let shouldRunMercury =
@@ -522,13 +543,26 @@ private extension TranscriptionFeature {
       state.isMercuryTransforming = true
     }
 
-    let instructions = state.warpSettings.mercuryTransformInstructions
+    let instructions = state.warpSettings.resolvedMercuryAdditionalInstructions(
+      frontmostBundleID: state.sourceAppBundleID,
+      browserWindowTitle: state.sourceBrowserWindowTitle
+    )
+    let route = state.warpSettings.resolvedStyleRoute(
+      frontmostBundleID: state.sourceAppBundleID,
+      browserWindowTitle: state.sourceBrowserWindowTitle
+    )
+    mercuryTransformLogger.notice(
+      "Mercury style routing context=\(String(describing: route.context)) preset=\(String(describing: route.presetSlot))"
+    )
     let sourceAppBundleID = state.sourceAppBundleID
     let sourceAppName = state.sourceAppName
     let transcriptionHistory = state.$transcriptionHistory
 
     return .run { send in
-      var textToPaste = modifiedResult
+      // Pipeline: Mercury post-processing → word removals → word remappings.
+      // Remappings run last so user-defined substitutions are always the final word,
+      // even if Mercury rewrites or normalizes wording.
+      var textToPaste = result
 
       if shouldRunMercury {
         do {
@@ -536,7 +570,7 @@ private extension TranscriptionFeature {
           if let key, !key.isEmpty {
             do {
               textToPaste = try await mercuryTransform.transform(
-                modifiedResult,
+                result,
                 instructions,
                 key
               )
@@ -554,6 +588,24 @@ private extension TranscriptionFeature {
         }
         await send(.mercuryTransformDidFinish)
       }
+
+      if applyUserModifications {
+        if removalsEnabled {
+          let removed = WordRemovalApplier.apply(textToPaste, removals: removals)
+          if removed != textToPaste {
+            let enabledRemovalCount = removals.filter(\.isEnabled).count
+            transcriptionFeatureLogger.info("Applied \(enabledRemovalCount) word removal(s) post-Mercury")
+          }
+          textToPaste = removed
+        }
+        let remapped = WordRemappingApplier.apply(textToPaste, remappings: remappings)
+        if remapped != textToPaste {
+          transcriptionFeatureLogger.info("Applied \(remappings.count) word remapping(s) post-Mercury")
+        }
+        textToPaste = remapped
+      }
+
+      guard !textToPaste.isEmpty else { return }
 
       do {
         try await finalizeRecordingAndStoreTranscript(
@@ -688,10 +740,30 @@ struct TranscriptionView: View {
     }
   }
 
+  private var appIcon: NSImage? {
+    guard let bundleID = store.sourceAppBundleID,
+          let appURL = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID)
+    else { return nil }
+    return NSWorkspace.shared.icon(forFile: appURL.path)
+  }
+
+  private var presetLabel: String? {
+    guard store.warpSettings.mercuryTransformEnabled else { return nil }
+    let route = store.warpSettings.resolvedStyleRoute(
+      frontmostBundleID: store.sourceAppBundleID,
+      browserWindowTitle: store.sourceBrowserWindowTitle
+    )
+    let slot = route.presetSlot.rawValue.capitalized
+    return route.context == .email ? "Email · \(slot)" : slot
+  }
+
   var body: some View {
     TranscriptionIndicatorView(
       status: status,
-      meter: store.meter
+      meter: store.meter,
+      appName: store.sourceAppName,
+      appIcon: appIcon,
+      presetLabel: presetLabel
     )
     .task {
       await store.send(.task).finish()

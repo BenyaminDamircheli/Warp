@@ -1,10 +1,3 @@
-//
-//  HotKeyProcessorTests.swift
-//  WarpCoreTests
-//
-//  Created by Kit Langton on 1/27/25.
-//
-
 import Dependencies
 import Foundation
 @testable import WarpCore
@@ -415,6 +408,20 @@ struct HotKeyProcessorTests {
                 // Second tap within threshold - should start a new recording but not lock yet
                 ScenarioStep(time: 0.2, key: nil, modifiers: [.option], expectedOutput: .startRecording, expectedIsMatched: true, expectedState: .pressAndHold(startTime: Date(timeIntervalSince1970: 0.2))),
                 // Second release - NOW it should lock
+                ScenarioStep(time: 0.3, key: nil, modifiers: [], expectedOutput: nil, expectedIsMatched: true, expectedState: .doubleTapLock),
+            ]
+        )
+    }
+
+    /// Same double-tap lock sequence as Option-only; fn-only hotkeys use the modifier-only path.
+    @Test
+    func doubleTap_onlyLocksAfterSecondRelease_fnModifierOnly() throws {
+        runScenario(
+            hotkey: HotKey(key: nil, modifiers: [.fn]),
+            steps: [
+                ScenarioStep(time: 0.0, key: nil, modifiers: [.fn], expectedOutput: .startRecording, expectedIsMatched: true),
+                ScenarioStep(time: 0.1, key: nil, modifiers: [], expectedOutput: .stopRecording, expectedIsMatched: false),
+                ScenarioStep(time: 0.2, key: nil, modifiers: [.fn], expectedOutput: .startRecording, expectedIsMatched: true, expectedState: .pressAndHold(startTime: Date(timeIntervalSince1970: 0.2))),
                 ScenarioStep(time: 0.3, key: nil, modifiers: [], expectedOutput: nil, expectedIsMatched: true, expectedState: .doubleTapLock),
             ]
         )

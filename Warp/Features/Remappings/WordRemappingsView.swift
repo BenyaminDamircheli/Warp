@@ -68,8 +68,6 @@ struct WordRemappingsView: View {
 				case .remappings:
 					remappingsSection
 				}
-
-				MercuryTransformSectionView(store: store)
 			}
 			.frame(maxWidth: .infinity, alignment: .leading)
 			.padding()

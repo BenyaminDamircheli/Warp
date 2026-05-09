@@ -5,7 +5,7 @@ import SwiftUI
 
 private let inceptionDocsURL = URL(string: "https://docs.inceptionlabs.ai/get-started/get-started")!
 
-/// Inception Mercury post-processing UI on the Transforms screen.
+/// Inception Mercury post-processing UI on the Style screen.
 struct MercuryTransformSectionView: View {
   @ObserveInjection var inject
   @Bindable var store: StoreOf<SettingsFeature>

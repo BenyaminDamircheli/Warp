@@ -1,9 +1,3 @@
-//
-//  HotKeyProcessor.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/28/25.
-//
 import Dependencies
 import Foundation
 import SwiftUI

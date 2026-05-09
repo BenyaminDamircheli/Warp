@@ -1,10 +1,3 @@
-//
-//  AppFeature.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/26/25.
-//
-
 import AppKit
 import ComposableArchitecture
 import Dependencies
@@ -15,9 +8,9 @@ import SwiftUI
 struct AppFeature {
   enum ActiveTab: Equatable {
     case settings
+    case style
     case remappings
     case history
-    case about
   }
 
 	@ObservableState
@@ -271,6 +264,14 @@ struct AppView: View {
         .tag(AppFeature.ActiveTab.settings)
 
         Button {
+          store.send(.setActiveTab(.style))
+        } label: {
+          Label(String(localized: "style.pageTitle", bundle: .main), systemImage: "paintbrush.pointed")
+        }
+        .buttonStyle(.plain)
+        .tag(AppFeature.ActiveTab.style)
+
+        Button {
           store.send(.setActiveTab(.remappings))
         } label: {
           Label("Transforms", systemImage: "text.badge.plus")
@@ -285,14 +286,6 @@ struct AppView: View {
         }
         .buttonStyle(.plain)
         .tag(AppFeature.ActiveTab.history)
-
-        Button {
-          store.send(.setActiveTab(.about))
-        } label: {
-          Label("About", systemImage: "info.circle")
-        }
-        .buttonStyle(.plain)
-        .tag(AppFeature.ActiveTab.about)
       }
     } detail: {
       switch store.state.activeTab {
@@ -304,15 +297,15 @@ struct AppView: View {
           inputMonitoringPermission: store.inputMonitoringPermission
         )
         .navigationTitle("Settings")
+      case .style:
+        StyleView(store: store.scope(state: \.settings, action: \.settings))
+          .navigationTitle(String(localized: "style.pageTitle", bundle: .main))
       case .remappings:
         WordRemappingsView(store: store.scope(state: \.settings, action: \.settings))
           .navigationTitle("Transforms")
       case .history:
         HistoryView(store: store.scope(state: \.history, action: \.history))
           .navigationTitle("History")
-      case .about:
-        AboutView(store: store.scope(state: \.settings, action: \.settings))
-          .navigationTitle("About")
       }
     }
     .enableInjection()

@@ -1,10 +1,3 @@
-//
-//  HotKeyView.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/30/25.
-//
-
 import WarpCore
 import Inject
 import Sauce

@@ -1,19 +1,12 @@
-//
-//  HexCapsuleView.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/25/25.
-
 import Inject
 import Pow
 import SwiftUI
 
 struct TranscriptionIndicatorView: View {
   @ObserveInjection var inject
-  
-  enum Status {
+
+  enum Status: Equatable {
     case hidden
-    case optionKeyPressed
     case recording
     case transcribing
     case prewarming
@@ -21,141 +14,260 @@ struct TranscriptionIndicatorView: View {
 
   var status: Status
   var meter: Meter
+  var appName: String? = nil
+  var appIcon: NSImage? = nil
+  var presetLabel: String? = nil
 
-  let transcribeBaseColor: Color = .blue
-  private var backgroundColor: Color {
-    switch status {
-    case .hidden: return Color.clear
-    case .optionKeyPressed: return Color.black
-    case .recording: return .red.mix(with: .black, by: 0.5).mix(with: .red, by: meter.averagePower * 3)
-    case .transcribing: return transcribeBaseColor.mix(with: .black, by: 0.5)
-    case .prewarming: return transcribeBaseColor.mix(with: .black, by: 0.5)
-    }
+  private let pillHeight: CGFloat = 24
+
+  private var normalizedAvg: Double {
+    min(1, meter.averagePower * 3)
   }
 
-  private var strokeColor: Color {
-    switch status {
-    case .hidden: return Color.clear
-    case .optionKeyPressed: return Color.black
-    case .recording: return Color.red.mix(with: .white, by: 0.1).opacity(0.6)
-    case .transcribing: return transcribeBaseColor.mix(with: .white, by: 0.1).opacity(0.6)
-    case .prewarming: return transcribeBaseColor.mix(with: .white, by: 0.1).opacity(0.6)
-    }
+  private var normalizedPeak: Double {
+    min(1, meter.peakPower * 3)
   }
 
-  private var innerShadowColor: Color {
-    switch status {
-    case .hidden: return Color.clear
-    case .optionKeyPressed: return Color.clear
-    case .recording: return Color.red
-    case .transcribing: return transcribeBaseColor
-    case .prewarming: return transcribeBaseColor
-    }
+  private var isRecording: Bool {
+    status == .recording
   }
 
-  private let cornerRadius: CGFloat = 8
-  private let baseWidth: CGFloat = 16
-  private let expandedWidth: CGFloat = 56
-
-  var isHidden: Bool {
-    status == .hidden
+  private var isTranscribingOrPrewarming: Bool {
+    status == .transcribing || status == .prewarming
   }
-
-  @State var transcribeEffect = 0
 
   var body: some View {
-    let averagePower = min(1, meter.averagePower * 3)
-    let peakPower = min(1, meter.peakPower * 3)
-    ZStack {
-      Capsule()
-        .fill(backgroundColor.shadow(.inner(color: innerShadowColor, radius: 4)))
-        .overlay {
-          Capsule()
-            .stroke(strokeColor, lineWidth: 1)
-            .blendMode(.screen)
+    indicator
+      .overlay(alignment: .top) {
+        if status == .prewarming {
+          prewarmingTooltip
+            .offset(y: -34)
         }
-        .overlay(alignment: .center) {
-          RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(Color.red.opacity(status == .recording ? (averagePower < 0.1 ? averagePower / 0.1 : 1) : 0))
-            .blur(radius: 2)
-            .blendMode(.screen)
-            .padding(6)
-        }
-        .overlay(alignment: .center) {
-          RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(Color.white.opacity(status == .recording ? (averagePower < 0.1 ? averagePower / 0.1 : 0.5) : 0))
-            .blur(radius: 1)
-            .blendMode(.screen)
-            .frame(maxWidth: .infinity, alignment: .center)
-            .padding(7)
-        }
-        .overlay(alignment: .center) {
-          GeometryReader { proxy in
-            RoundedRectangle(cornerRadius: cornerRadius)
-              .fill(Color.red.opacity(status == .recording ? (peakPower < 0.1 ? (peakPower / 0.1) * 0.5 : 0.5) : 0))
-              .frame(width: max(proxy.size.width * (peakPower + 0.6), 0), height: proxy.size.height, alignment: .center)
-              .frame(maxWidth: .infinity, alignment: .center)
-              .blur(radius: 4)
-              .blendMode(.screen)
-          }.padding(6)
-        }
-        .cornerRadius(cornerRadius)
-        .shadow(
-          color: status == .recording ? .red.opacity(averagePower) : .red.opacity(0),
-          radius: 4
-        )
-        .shadow(
-          color: status == .recording ? .red.opacity(averagePower * 0.5) : .red.opacity(0),
-          radius: 8
-        )
-        .animation(.interactiveSpring(), value: meter)
-        .frame(
-          width: status == .recording ? expandedWidth : baseWidth,
-          height: baseWidth
-        )
-        .opacity(status == .hidden ? 0 : 1)
-        .scaleEffect(status == .hidden ? 0.0 : 1)
-        .blur(radius: status == .hidden ? 4 : 0)
-        .animation(.bouncy(duration: 0.3), value: status)
-        .changeEffect(.glow(color: .red.opacity(0.5), radius: 8), value: status)
-        .changeEffect(.shine(angle: .degrees(0), duration: 0.6), value: transcribeEffect)
-        .compositingGroup()
-        .task(id: status == .transcribing) {
-          while status == .transcribing, !Task.isCancelled {
-            transcribeEffect += 1
-            try? await Task.sleep(for: .seconds(0.25))
-          }
-        }
-      
-      // Show tooltip when prewarming
-      if status == .prewarming {
-        VStack(spacing: 4) {
-          Text("Model prewarming...")
-            .font(.system(size: 12, weight: .medium))
-            .foregroundColor(.white)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-              RoundedRectangle(cornerRadius: 4)
-                .fill(Color.black.opacity(0.8))
-            )
-        }
-        .offset(y: -24)
-        .transition(.opacity)
-        .zIndex(2)
+      }
+      .animation(.interactiveSpring(duration: 0.15), value: meter)
+      .opacity(status == .hidden ? 0 : 1)
+      .scaleEffect(status == .hidden ? 0.6 : 1)
+      .blur(radius: status == .hidden ? 4 : 0)
+      .animation(.spring(duration: 0.4, bounce: 0.18), value: status)
+      .changeEffect(.glow(color: .white.opacity(0.35), radius: 10), value: status)
+      .compositingGroup()
+      .enableInjection()
+  }
+
+  // MARK: - Pill
+
+  private var indicator: some View {
+    HStack(spacing: 7) {
+      if let appIcon, isRecording {
+        Image(nsImage: appIcon)
+          .resizable()
+          .interpolation(.high)
+          .aspectRatio(contentMode: .fit)
+          .frame(width: 14, height: 14)
+          .clipShape(RoundedRectangle(cornerRadius: 3.5, style: .continuous))
+          .transition(.blurReplace)
+      }
+
+      if let appName, !appName.isEmpty, isRecording {
+        Text(appName)
+          .font(.system(size: 11.5, weight: .semibold, design: .rounded))
+          .foregroundStyle(.white)
+          .lineLimit(1)
+          .transition(.blurReplace)
+      }
+
+      if let presetLabel, !presetLabel.isEmpty, isRecording {
+        separator
+
+        Text(presetLabel)
+          .font(.system(size: 11, weight: .medium, design: .rounded))
+          .foregroundStyle(.white.opacity(0.55))
+          .lineLimit(1)
+          .transition(.blurReplace)
+      }
+
+      if isRecording {
+        recordingAudioBars
+          .padding(.leading, 2)
+          .transition(.blurReplace)
+      }
+
+      if isTranscribingOrPrewarming {
+        transcribingDots
+          .transition(.blurReplace)
       }
     }
-    .enableInjection()
+    .padding(.horizontal, horizontalPadding)
+    .frame(minWidth: pillHeight, minHeight: pillHeight)
+    .background(pillBackground)
+    .overlay(pillStroke)
+    .shadow(color: .black.opacity(0.45), radius: 12, y: 4)
+    .shadow(color: .black.opacity(0.30), radius: 2, y: 1)
+    .shadow(
+      color: .white.opacity(isRecording ? normalizedAvg * 0.18 : 0),
+      radius: 10 + normalizedPeak * 8
+    )
+    .fixedSize()
+  }
+
+  private var horizontalPadding: CGFloat {
+    if isRecording { return 10 }
+    if isTranscribingOrPrewarming { return 10 }
+    return 0
+  }
+
+  // MARK: - Background & Stroke
+
+  private var pillBackground: some View {
+    Capsule(style: .continuous)
+      .fill(Color(white: 0.04).opacity(0.92))
+      .background {
+        Capsule(style: .continuous)
+          .fill(.ultraThinMaterial)
+      }
+      .overlay {
+        Capsule(style: .continuous)
+          .fill(
+            LinearGradient(
+              colors: [Color.white.opacity(0.10), Color.white.opacity(0.0)],
+              startPoint: .top,
+              endPoint: .bottom
+            )
+          )
+          .blendMode(.plusLighter)
+      }
+  }
+
+  private var pillStroke: some View {
+    Capsule(style: .continuous)
+      .strokeBorder(
+        LinearGradient(
+          colors: [
+            Color.white.opacity(0.22),
+            Color.white.opacity(0.06)
+          ],
+          startPoint: .top,
+          endPoint: .bottom
+        ),
+        lineWidth: 0.6
+      )
+  }
+
+  // MARK: - Separator
+
+  private var separator: some View {
+    Circle()
+      .fill(Color.white.opacity(0.28))
+      .frame(width: 2.5, height: 2.5)
+      .transition(.opacity)
+  }
+
+  // MARK: - Audio Bars
+
+  private var recordingAudioBars: some View {
+    HStack(alignment: .center, spacing: 2.5) {
+      ForEach(0 ..< 4, id: \.self) { index in
+        recordingAudioBar(index: index)
+      }
+    }
+    .frame(height: 12)
+    .accessibilityLabel(String(localized: "Recording level"))
+  }
+
+  private func recordingAudioBar(index: Int) -> some View {
+    let spread = Double(index) / 3.0
+    let stagger = 0.4 + spread * 0.6
+    let level = min(1, normalizedAvg * stagger * 1.2 + normalizedPeak * (0.2 + spread * 0.3))
+    let minH: CGFloat = 2.5
+    let maxH: CGFloat = 11
+    let height = minH + CGFloat(level) * (maxH - minH)
+
+    return RoundedRectangle(cornerRadius: 1, style: .continuous)
+      .fill(Color.white)
+      .frame(width: 2, height: height)
+      .opacity(0.45 + level * 0.55)
+  }
+
+  // MARK: - Transcribing Dots
+
+  private var transcribingDots: some View {
+    TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
+      let t = timeline.date.timeIntervalSinceReferenceDate
+      HStack(spacing: 3) {
+        ForEach(0 ..< 3, id: \.self) { i in
+          let phase = t * 2.6 + Double(i) * 0.55
+          let wave = (sin(phase) + 1) / 2
+          Circle()
+            .fill(Color.white)
+            .frame(width: 4, height: 4)
+            .opacity(0.35 + wave * 0.6)
+            .scaleEffect(0.85 + wave * 0.3)
+        }
+      }
+      .frame(height: 12)
+    }
+    .accessibilityLabel(String(localized: "Transcribing"))
+  }
+
+  // MARK: - Prewarming Tooltip
+
+  private var prewarmingTooltip: some View {
+    Text("Model prewarming…")
+      .font(.system(size: 10.5, weight: .medium, design: .rounded))
+      .foregroundStyle(.white.opacity(0.85))
+      .padding(.horizontal, 9)
+      .padding(.vertical, 4)
+      .background {
+        Capsule(style: .continuous)
+          .fill(Color(white: 0.04).opacity(0.92))
+          .background {
+            Capsule(style: .continuous)
+              .fill(.ultraThinMaterial)
+          }
+      }
+      .overlay {
+        Capsule(style: .continuous)
+          .strokeBorder(Color.white.opacity(0.12), lineWidth: 0.5)
+      }
+      .shadow(color: .black.opacity(0.35), radius: 6, y: 2)
+      .transition(.blurReplace)
   }
 }
 
-#Preview("HEX") {
-  VStack(spacing: 8) {
-    TranscriptionIndicatorView(status: .hidden, meter: .init(averagePower: 0, peakPower: 0))
-    TranscriptionIndicatorView(status: .optionKeyPressed, meter: .init(averagePower: 0, peakPower: 0))
-    TranscriptionIndicatorView(status: .recording, meter: .init(averagePower: 0.5, peakPower: 0.5))
-    TranscriptionIndicatorView(status: .transcribing, meter: .init(averagePower: 0, peakPower: 0))
-    TranscriptionIndicatorView(status: .prewarming, meter: .init(averagePower: 0, peakPower: 0))
+#Preview("Indicator") {
+  VStack(spacing: 24) {
+    TranscriptionIndicatorView(
+      status: .hidden,
+      meter: .init(averagePower: 0, peakPower: 0)
+    )
+    TranscriptionIndicatorView(
+      status: .recording,
+      meter: .init(averagePower: 0.3, peakPower: 0.4),
+      appName: "Slack",
+      appIcon: NSWorkspace.shared.icon(forFile: "/System/Applications/Notes.app"),
+      presetLabel: "Formal"
+    )
+    TranscriptionIndicatorView(
+      status: .recording,
+      meter: .init(averagePower: 0.8, peakPower: 0.9),
+      appName: "Notes",
+      appIcon: NSWorkspace.shared.icon(forFile: "/System/Applications/Notes.app")
+    )
+    TranscriptionIndicatorView(
+      status: .transcribing,
+      meter: .init(averagePower: 0, peakPower: 0)
+    )
+    TranscriptionIndicatorView(
+      status: .prewarming,
+      meter: .init(averagePower: 0, peakPower: 0)
+    )
   }
-  .padding(40)
+  .padding(60)
+  .background(
+    LinearGradient(
+      colors: [Color(white: 0.95), Color(white: 0.6)],
+      startPoint: .top,
+      endPoint: .bottom
+    )
+  )
 }

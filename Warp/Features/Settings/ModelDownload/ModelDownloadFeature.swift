@@ -60,7 +60,7 @@ public struct CuratedModelInfo: Equatable, Identifiable, Codable {
 	/// Tooltip for the streaming EOU model (shown on the info control in settings).
 	public var streamingModelHelpText: String? {
 		guard parakeetModel == .eouStreaming160 else { return nil }
-		return "Streams partial text for lower latency. The speed benefit shows up mainly when you have Mercury-2 post-processing enabled. Parakeet TDT v3 is usually more accurate, however, so treat this as a speed vs. accuracy primarily when post-processing is on."
+		return "Streams partial text for lower latency. The speed benefit shows up mainly when Style cloud post-processing is enabled. Parakeet TDT v3 is usually more accurate, however, so treat this as a speed vs. accuracy tradeoff primarily when post-processing is on."
 	}
 
 	public init(

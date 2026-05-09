@@ -1,10 +1,3 @@
-//
-//  SoundEffect.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/26/25.
-//
-
 import AVFoundation
 import ComposableArchitecture
 import Dependencies

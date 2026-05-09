@@ -1,10 +1,3 @@
-//
-//  TranscriptionClient.swift
-//  Hex
-//
-//  Created by Kit Langton on 1/24/25.
-//
-
 import AVFoundation
 import Dependencies
 import DependenciesMacros

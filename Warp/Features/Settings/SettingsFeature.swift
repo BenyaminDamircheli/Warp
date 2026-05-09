@@ -8,6 +8,7 @@ import IdentifiedCollections
 import Sauce
 import ServiceManagement
 import SwiftUI
+import UniformTypeIdentifiers
 
 private let settingsLogger = WarpLog.settings
 private typealias SettingsAudioPropertyListenerBlock = @convention(block) (UInt32, UnsafePointer<AudioObjectPropertyAddress>) -> Void
@@ -111,6 +112,12 @@ struct SettingsFeature {
     case inceptionAPIKeyPresenceLoaded(Bool)
     case saveInceptionAPIKey(String)
     case clearInceptionAPIKey
+
+    // Style (context + linked apps)
+    case pickStyleLinkedApplications(StyleMessageContext)
+    case mergeStyleLinkedApplications(StyleMessageContext, [String])
+    case removeStyleLinkedBundle(StyleMessageContext, String)
+    case setStylePreset(StyleMessageContext, StylePresetSlot)
   }
 
   @Dependency(\.keyEventMonitor) var keyEventMonitor
@@ -563,7 +570,50 @@ struct SettingsFeature {
           await send(.inceptionAPIKeyPresenceLoaded(false))
         }
 
+      case let .pickStyleLinkedApplications(context):
+        return .run { send in
+          let bundleIDs = await MainActor.run {
+            pickApplicationBundleIDsFromOpenPanel()
+          }
+          guard !bundleIDs.isEmpty else { return }
+          await send(.mergeStyleLinkedApplications(context, bundleIDs))
+        }
+
+      case let .mergeStyleLinkedApplications(context, bundleIDs):
+        state.$warpSettings.withLock { settings in
+          settings.updateStyleBucket(context) { bucket in
+            for id in bundleIDs where !bucket.linkedBundleIDs.contains(id) {
+              bucket.linkedBundleIDs.append(id)
+            }
+          }
+        }
+        return .none
+
+      case let .removeStyleLinkedBundle(context, bundleID):
+        state.$warpSettings.withLock { settings in
+          settings.updateStyleBucket(context) { bucket in
+            bucket.linkedBundleIDs.removeAll { $0 == bundleID }
+          }
+        }
+        return .none
+
+      case let .setStylePreset(context, slot):
+        state.$warpSettings.withLock { settings in
+          settings.updateStyleBucket(context) { $0.selectedPresetSlot = slot }
+        }
+        return .none
+
       }
     }
   }
+}
+
+private func pickApplicationBundleIDsFromOpenPanel() -> [String] {
+  let panel = NSOpenPanel()
+  panel.allowedContentTypes = [UTType.applicationBundle]
+  panel.allowsMultipleSelection = true
+  panel.canChooseDirectories = false
+  panel.message = String(localized: "style.openPanel.message", bundle: .main)
+  guard panel.runModal() == .OK else { return [] }
+  return panel.urls.compactMap { Bundle(url: $0)?.bundleIdentifier }
 }

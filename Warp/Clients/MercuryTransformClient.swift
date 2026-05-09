@@ -82,7 +82,7 @@ extension MercuryTransformClient {
       return base
     }
     return base
-      + "\n\n---\nAdditional preferences from the user (apply these on top of the rules above):\n\n"
+      + "\n\n---\nStyle routing, preset rules, and optional user supplement (apply on top of the rules above):\n\n"
       + extra
   }
 }

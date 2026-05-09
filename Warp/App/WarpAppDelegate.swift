@@ -94,8 +94,10 @@ class WarpAppDelegate: NSObject, NSApplicationDelegate {
 			return
 		}
 		let transcriptionStore = WarpApp.appStore.scope(state: \.transcription, action: \.transcription)
-		let transcriptionView = TranscriptionView(store: transcriptionStore).padding().padding(.top).padding(.top)
-			.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+		let transcriptionView = TranscriptionView(store: transcriptionStore)
+			.environment(\.colorScheme, .dark)
+			.padding(.bottom, 60)
+			.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
 		invisibleWindow = InvisibleWindow.fromView(transcriptionView)
 		invisibleWindow?.makeKeyAndOrderFront(nil)
 	}
@@ -109,11 +111,12 @@ class WarpAppDelegate: NSObject, NSApplicationDelegate {
 
 		let settingsView = AppView(store: WarpApp.appStore)
 		let settingsWindow = NSWindow(
-			contentRect: .init(x: 0, y: 0, width: 700, height: 700),
-			styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable],
+			contentRect: .init(x: 0, y: 0, width: 740, height: 720),
+			styleMask: [.titled, .fullSizeContentView, .closable, .miniaturizable, .resizable],
 			backing: .buffered,
 			defer: false
 		)
+		settingsWindow.minSize = NSSize(width: 660, height: 520)
 		settingsWindow.titleVisibility = .visible
 		settingsWindow.contentView = NSHostingView(rootView: settingsView)
 		settingsWindow.isReleasedWhenClosed = false
