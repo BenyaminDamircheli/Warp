@@ -20,6 +20,9 @@ For my workflow, Warp is on average about **~10% faster than Wispr Flow** end-to
 
 Your numbers will differ based on how much you dictate, which model you pick, and how heavy your style preset is.
 
+## Demo (apologies for the clock in the background)
+[Watch demo (~1:15)](https://www.youtube.com/watch?v=KTGdn6_e76E)
+
 ## Features
 
 - **Hotkey modes**: press-and-hold or double-tap, set per hotkey. Modifier-only hotkeys (e.g. Option) use a 0.3s threshold to avoid clashing with OS shortcuts.
